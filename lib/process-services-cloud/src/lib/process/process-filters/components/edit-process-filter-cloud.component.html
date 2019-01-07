@@ -44,13 +44,13 @@
                     </mat-select>
                 </mat-form-field>
                 <div>
-                    <button mat-icon-button matTooltip="{{'ADF_CLOUD_EDIT_PROCESS_FILTER.TOOL_TIP.SAVE' | translate}}" [disabled]="!formHasBeenChanged" id="adf-save-id" (click)="onSave()">
+                    <button mat-icon-button matTooltip="{{'ADF_CLOUD_EDIT_PROCESS_FILTER.TOOL_TIP.SAVE' | translate}}" [disabled]="!formHasBeenChanged" id="adf-save-id" (click)="onSave()" data-automation-id="Save">
                         <mat-icon>save</mat-icon>
                     </button>
-                    <button mat-icon-button matTooltip="{{'ADF_CLOUD_EDIT_PROCESS_FILTER.TOOL_TIP.SAVE_AS' | translate}}" [disabled]="!formHasBeenChanged" id="adf-save-as-id" (click)="onSaveAs()">
+                    <button mat-icon-button matTooltip="{{'ADF_CLOUD_EDIT_PROCESS_FILTER.TOOL_TIP.SAVE_AS' | translate}}" [disabled]="!formHasBeenChanged" id="adf-save-as-id" (click)="onSaveAs()" data-automation-id="Save as">
                         <mat-icon>unarchive</mat-icon>
                     </button>
-                    <button mat-icon-button matTooltip="{{'ADF_CLOUD_EDIT_PROCESS_FILTER.TOOL_TIP.DELETE' | translate}}" id="adf-delete-id" (click)="onDelete()">
+                    <button mat-icon-button matTooltip="{{'ADF_CLOUD_EDIT_PROCESS_FILTER.TOOL_TIP.DELETE' | translate}}" id="adf-delete-id" (click)="onDelete()" data-automation-id="Delete">
                         <mat-icon>delete</mat-icon>
                     </button>
                 </div>

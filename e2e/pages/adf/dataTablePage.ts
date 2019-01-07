@@ -243,6 +243,10 @@ export class DataTablePage {
         Util.waitUntilElementIsPresent(this.spinner);
     }
 
+    checkSpinnerIsNotDisplayed() {
+        Util.waitUntilElementIsNotOnPage(this.spinner);
+    }
+
     checkRowIsDisplayedByName(filename) {
         Util.waitUntilElementIsVisible(element.all(by.css(`div[filename="${filename}"]`)).first());
     }

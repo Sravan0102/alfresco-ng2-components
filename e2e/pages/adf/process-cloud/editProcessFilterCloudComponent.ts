@@ -15,12 +15,22 @@
  * limitations under the License.
  */
 import { Util } from '../../../util/util';
-import { by, element } from 'protractor';
+import { by, element, protractor } from 'protractor';
+import { EditProcessFilterDialogCloud } from '../dialog/editProcessFilterDialogCloud';
 
 export class EditProcessFilterCloudComponent {
 
     customiseFilter = element(by.id('adf-edit-process-filter-title-id'));
     selectedOption = element(by.css('mat-option[class*="mat-selected"]'));
+    saveButton = element(by.css('button[data-automation-id="Save"]'));// de verificat
+    saveAsButton = element(by.css('button[data-automation-id="Save as"]'));// de verificat
+    deleteButton = element(by.css('button[data-automation-id="Delete"]'));// de verificat
+
+    editProcessFilter = new EditProcessFilterDialogCloud();
+
+    editProcessFilterDialog() {
+        return this.editProcessFilter;
+    }
 
     clickCustomiseFilterHeader() {
         Util.waitUntilElementIsVisible(this.customiseFilter);
@@ -38,6 +48,10 @@ export class EditProcessFilterCloudComponent {
         return this;
     }
 
+    getStateFilterDropDownValue() {
+        return element(by.css("mat-form-field[data-automation-id='status'] span")).getText();
+    }
+
     setSortFilterDropDown(option) {
         this.clickOnDropDownArrow('sort');
 
@@ -46,6 +60,10 @@ export class EditProcessFilterCloudComponent {
         Util.waitUntilElementIsVisible(sortElement);
         sortElement.click();
         return this;
+    }
+
+    getSortFilterDropDownValue() {
+        return element(by.css("mat-form-field[data-automation-id='sort'] span")).getText();
     }
 
     setOrderFilterDropDown(option) {
@@ -58,10 +76,60 @@ export class EditProcessFilterCloudComponent {
         return this;
     }
 
+    getOrderFilterDropDownValue() {
+        return element(by.css("mat-form-field[data-automation-id='order'] span")).getText();
+    }
+
     clickOnDropDownArrow(option) {
         let dropDownArrow = element(by.css("mat-form-field[data-automation-id='" + option + "'] div[class*='arrow']"));
         Util.waitUntilElementIsVisible(dropDownArrow);
         dropDownArrow.click();
         Util.waitUntilElementIsVisible(this.selectedOption);
+    }
+
+    checkSaveButtonIsDisplayed() {
+        Util.waitUntilElementIsVisible(this.saveButton);
+        return this;
+    }
+
+    checkSaveAsButtonIsDisplayed() {
+        Util.waitUntilElementIsVisible(this.saveAsButton);
+        return this;
+    }
+
+    checkDeleteButtonIsDisplayed() {
+        Util.waitUntilElementIsVisible(this.deleteButton);
+        return this;
+    }
+
+    checkSaveButtonIsEnabled() {
+        return this.saveButton.isEnabled();
+    }
+
+    checkSaveAsButtonIsEnabled() {
+        return this.saveAsButton.isEnabled();
+    }
+
+    checkDeleteButtonIsEnabled() {
+        return this.deleteButton.isEnabled();
+    }
+
+    clickSaveAsButton() {
+        Util.waitUntilElementIsClickable(this.saveAsButton);
+        Util.waitUntilElementIsVisible(this.saveAsButton);
+        this.saveAsButton.click();
+        return this.editProcessFilter;
+    }
+
+    clickDeleteButton() {
+        Util.waitUntilElementIsVisible(this.deleteButton);
+        this.deleteButton.click();
+        return this;
+    }
+
+    clickSaveButton() {
+        Util.waitUntilElementIsVisible(this.saveButton);
+        this.saveButton.click();
+        return this;
     }
 }
