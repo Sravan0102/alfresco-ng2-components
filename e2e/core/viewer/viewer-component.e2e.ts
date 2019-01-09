@@ -32,7 +32,7 @@ import { FileModel } from '../../models/ACS/fileModel';
 import { FolderModel } from '../../models/ACS/folderModel';
 import { AcsUserModel } from '../../models/ACS/acsUserModel';
 
-import AlfrescoApi = require('alfresco-js-api-node');
+import { AlfrescoApiCompatibility as AlfrescoApi } from '@alfresco/js-api';
 import { UploadActions } from '../../actions/ACS/upload.actions';
 import { browser } from 'protractor';
 
@@ -117,7 +117,6 @@ describe('Viewer', () => {
         await this.alfrescoJsApi.login(acsUser.id, acsUser.password);
 
         pngFileUploaded = await uploadActions.uploadFile(this.alfrescoJsApi, pngFileInfo.location, pngFileInfo.name, site.entry.guid);
-
         done();
     });
 

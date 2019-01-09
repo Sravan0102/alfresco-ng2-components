@@ -20,7 +20,7 @@ import { DataTablePage } from '../../pages/adf/dataTablePage';
 import TestConfig = require('../../test.config');
 
 import { AcsUserModel } from '../../models/ACS/acsUserModel';
-import AlfrescoApi = require('alfresco-js-api-node');
+import { AlfrescoApiCompatibility as AlfrescoApi } from '@alfresco/js-api';
 import { NavigationBarPage } from '../../pages/adf/navigationBarPage';
 
 describe('Datatable component - selection', () => {

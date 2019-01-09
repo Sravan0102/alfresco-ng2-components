@@ -81,7 +81,6 @@
     "@nrwl/nx": "7.1.1",
     "@nrwl/schematics": "7.1.1",
     "adf-tslint-rules": "0.0.6",
-    "alfresco-js-api-node": "2.7.0-beta5",
     "chart.js": "2.5.0",
     "classlist.js": "1.1.20150312",
     "core-js": "^2.5.4",
