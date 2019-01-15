@@ -16,6 +16,7 @@
  */
 
 import { Util } from '../../../util/util';
+import { element, by, protractor } from 'protractor';
 
 export class UploadDialog {
 
@@ -25,17 +26,10 @@ export class UploadDialog {
     uploadedStatusIcon = by.css('mat-icon[class*="status--done"]');
     cancelledStatusIcon = by.css('div[class*="status--cancelled"]');
     errorStatusIcon = by.css('div[class*="status--error"]');
-    cancelWhileUploadingIcon = by.css('mat-icon[class*="adf-file-uploading-row__action adf-file-uploading-row__action--cancel"]');
     rowByRowName = by.xpath('ancestor::adf-file-uploading-list-row');
     title = element(by.css('span[class*="upload-dialog__title"]'));
     minimizeButton = element(by.css('mat-icon[title="Minimize"]'));
     maximizeButton = element(by.css('mat-icon[title="Maximize"]'));
-    sizeUploaded = by.css('span[class="adf-file-uploading-row__status"]');
-    canUploadConfirmationTitle = element(by.css('p[class="upload-dialog__confirmation--title"]'));
-    canUploadConfirmationDescription = element(by.css('p[class="upload-dialog__confirmation--text"]'));
-    confirmationDialogNoButton = element(by.partialButtonText('No'));
-    confirmationDialogYesButton = element(by.partialButtonText('Yes'));
-    cancelUploadsElement = element((by.css('footer[class*="upload-dialog__actions"] button[id="adf-upload-dialog-cancel-all"]')));
 
     clickOnCloseButton() {
         this.checkCloseButtonIsDisplayed();
@@ -95,12 +89,6 @@ export class UploadDialog {
         return this;
     }
 
-    cancelUploads() {
-        Util.waitUntilElementIsVisible(this.cancelUploadsElement);
-        this.cancelUploadsElement.click();
-        return this;
-    }
-
     fileIsCancelled(content) {
         Util.waitUntilElementIsVisible(this.getRowByRowName(content).element(this.cancelledStatusIcon));
         return this;
@@ -112,12 +100,6 @@ export class UploadDialog {
         return this;
     }
 
-    removeFileWhileUploading(content) {
-        browser.driver.actions().mouseMove(this.getRowByRowName(content).element(this.sizeUploaded)).perform();
-        this.getRowByRowName(content).element(this.cancelWhileUploadingIcon).click();
-        return this;
-    }
-
     getTitleText() {
         Util.waitUntilElementIsVisible(this.title);
         let deferred = protractor.promise.defer();
@@ -125,36 +107,6 @@ export class UploadDialog {
             deferred.fulfill(text);
         });
         return deferred.promise;
-    }
-
-    getConfirmationDialogTitleText() {
-        Util.waitUntilElementIsVisible(this.canUploadConfirmationTitle);
-        let deferred = protractor.promise.defer();
-        this.canUploadConfirmationTitle.getText().then((text) => {
-            deferred.fulfill(text);
-        });
-        return deferred.promise;
-    }
-
-    getConfirmationDialogDescriptionText() {
-        Util.waitUntilElementIsVisible(this.canUploadConfirmationDescription);
-        let deferred = protractor.promise.defer();
-        this.canUploadConfirmationDescription.getText().then((text) => {
-            deferred.fulfill(text);
-        });
-        return deferred.promise;
-    }
-
-    clickOnConfirmationDialogYesButton() {
-        Util.waitUntilElementIsVisible(this.confirmationDialogYesButton);
-        this.confirmationDialogYesButton.click();
-        return this;
-    }
-
-    clickOnConfirmationDialogNoButton() {
-        Util.waitUntilElementIsVisible(this.confirmationDialogNoButton);
-        this.confirmationDialogNoButton.click();
-        return this;
     }
 
     numberOfCurrentFilesUploaded() {

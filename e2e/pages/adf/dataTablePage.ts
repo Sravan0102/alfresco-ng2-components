@@ -35,6 +35,7 @@ export class DataTablePage {
     reset = element(by.xpath(`//span[contains(text(),'Reset to default')]/..`));
     replaceColumnsElement = element(by.xpath(`//span[contains(text(),'Replace columns')]/..`));
     createdOnColumn = element(by.css(`div[data-automation-id='auto_id_createdOn']`));
+    table = element.all(by.css('adf-datatable')).first();
     tableBody = element.all(by.css(`div[class='adf-datatable-body']`)).first();
     spinner = element(by.css('mat-progress-spinner'));
     rows = by.css(`adf-datatable div[class*='adf-datatable-body'] div[class*='adf-datatable-row']`);
@@ -42,6 +43,53 @@ export class DataTablePage {
     constructor(rootElement: ElementFinder = element(by.css('adf-datatable'))) {
         this.rootElement = rootElement;
         this.list = this.rootElement.all(by.css(`div[class*=adf-datatable-body] div[class*=adf-datatable-row]`));
+    }
+
+    /**
+     * Check the list is sorted.
+     *
+     * @param sortOrder: 'true' if the list is expected to be sorted ascendant and 'false' for descendant
+     * @param locator: locator for column
+     * @return 'true' if the list is sorted as expected and 'false' if it isn't
+     */
+    checkListIsSorted(sortOrder, locator) {
+        let deferred = protractor.promise.defer();
+        Util.waitUntilElementIsVisible(element.all(locator).first());
+        let initialList = [];
+        element.all(locator).each(function (currentElement) {
+            currentElement.getText().then(function (text) {
+                initialList.push(text);
+            });
+        }).then(function () {
+            let sortedList = initialList;
+            sortedList = sortedList.sort();
+            if (sortOrder === false) {
+                sortedList = sortedList.reverse();
+            }
+            deferred.fulfill(initialList.toString() === sortedList.toString());
+        });
+        return deferred.promise;
+    }
+
+    rightClickOnRowNamed(rowName) {
+        let row = this.getRowByRowName(rowName);
+        browser.actions().click(row, protractor.Button.RIGHT).perform();
+        Util.waitUntilElementIsVisible(element(by.id('adf-context-menu-content')));
+    }
+
+    clickRowToSelect(rowName) {
+        let row = this.getRowByRowName(rowName);
+        browser.actions().keyDown(protractor.Key.COMMAND).click(row).perform();
+        this.checkRowIsSelected(rowName);
+        return this;
+    }
+
+    getColumnLocator(column) {
+        return by.css(`div[id*='document-list-container'] div[class*='adf-datatable-row'] div[title='${column}'] adf-datatable-cell span`);
+    }
+
+    getTooltip(nodeName) {
+        return this.getRowByRowName(nodeName).element(by.css(`#document-list-container span[title="${nodeName}"]`)).getAttribute('title');
     }
 
     getFileHyperlink(filename) {
@@ -56,8 +104,8 @@ export class DataTablePage {
         return this.getAllRowsColumnValues('Name');
     }
 
-    async getAllRowsColumnValues(locator) {
-        let columnLocator = by.css("adf-datatable div[class*='adf-datatable-body'] div[class*='adf-datatable-row'] div[title='" + locator + "'] span");
+    async getAllRowsColumnValues(column) {
+        let columnLocator = by.css("adf-datatable div[class*='adf-datatable-body'] div[class*='adf-datatable-row'] div[title='" + column + "'] span");
         Util.waitUntilElementIsVisible(element.all(columnLocator).first());
         let initialList = await element.all(columnLocator).getText();
         return initialList.filter((el) => el);
@@ -102,6 +150,11 @@ export class DataTablePage {
         this.selectionButton.click();
         Util.waitUntilElementIsVisible(this.selectionDropDown);
         selectMode.click();
+    }
+
+    checkRowIsSelectedByName(content) {
+        let isRowSelected = this.getRowsName(content).element(by.xpath(`ancestor::div[contains(@class, 'is-selected')]`));
+        Util.waitUntilElementIsVisible(isRowSelected);
     }
 
     checkRowIsSelected(rowNumber) {
@@ -159,7 +212,7 @@ export class DataTablePage {
     }
 
     getRowsName(content) {
-        let row = element(by.css(`div[data-automation-id*='` + content + `']`));
+        let row = element(by.css(`div[data-automation-id*='${content}'] span`));
         Util.waitUntilElementIsPresent(row);
         return row;
     }
@@ -218,14 +271,14 @@ export class DataTablePage {
     }
 
     checkContentIsDisplayed(content) {
-        let row = by.cssContainingText(`[data-automation-id*="${content}"]`, content);
-        Util.waitUntilElementIsVisible(this.tableBody.all(row).first());
+        let row = by.css(`div[filename*="${content}"]`);
+        Util.waitUntilElementIsVisible(element.all(row).first());
         return this;
     }
 
     checkContentIsNotDisplayed(content) {
         let row = by.cssContainingText(`[data-automation-id*="${content}"]`, content);
-        Util.waitUntilElementIsNotOnPage(this.tableBody.all(row).first());
+        Util.waitUntilElementIsNotOnPage(element.all(row).first());
         return this;
     }
 
@@ -260,6 +313,11 @@ export class DataTablePage {
     getNumberOfRowsDisplayedWithSameName(filename) {
         Util.waitUntilElementIsVisible(element(by.css(`div[filename="${filename}"]`)));
         return element.all(by.css(`div[title='Name'][filename="${filename}"]`)).count();
+    }
+
+    tableIsLoaded() {
+        Util.waitUntilElementIsVisible(this.table);
+        return this;
     }
 
 }
