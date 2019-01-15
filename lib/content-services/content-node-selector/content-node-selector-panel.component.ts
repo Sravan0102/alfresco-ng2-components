@@ -15,7 +15,16 @@
  * limitations under the License.
  */
 
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild, ViewEncapsulation } from '@angular/core';
+import {
+    Component,
+    EventEmitter,
+    Input, OnChanges,
+    OnInit,
+    Output,
+    SimpleChanges,
+    ViewChild,
+    ViewEncapsulation
+} from '@angular/core';
 import {
     AlfrescoApiService, HighlightDirective, UserPreferencesService,
     PaginatedComponent, PaginationModel
@@ -42,7 +51,7 @@ const defaultValidation = () => true;
     encapsulation: ViewEncapsulation.None,
     host: { 'class': 'adf-content-node-selector-panel' }
 })
-export class ContentNodeSelectorPanelComponent implements OnInit, PaginatedComponent {
+export class ContentNodeSelectorPanelComponent implements OnInit, OnChanges, PaginatedComponent {
 
     /** Node ID of the folder currently listed. */
     @Input()
@@ -168,6 +177,12 @@ export class ContentNodeSelectorPanelComponent implements OnInit, PaginatedCompo
         this.isSelectionValid = this.isSelectionValid ? this.isSelectionValid : defaultValidation;
         this.excludeSiteContent = this.excludeSiteContent ? this.excludeSiteContent : [];
         this.rowFilter = this.getRowFilter(this.rowFilter);
+    }
+
+    ngOnChanges(changes: SimpleChanges) {
+        if (changes.rowFilter) {
+            this.rowFilter = this.getRowFilter(this.rowFilter);
+        }
     }
 
     private getRowFilter(initialFilterFunction): RowFilter {
