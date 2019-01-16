@@ -176,7 +176,9 @@ export class ContentNodeSelectorPanelComponent implements OnInit, OnChanges, Pag
         this.breadcrumbTransform = this.breadcrumbTransform ? this.breadcrumbTransform : null;
         this.isSelectionValid = this.isSelectionValid ? this.isSelectionValid : defaultValidation;
         this.excludeSiteContent = this.excludeSiteContent ? this.excludeSiteContent : [];
-        this.rowFilter = this.getRowFilter(this.rowFilter);
+        if (!this.rowFilter) {
+            this.rowFilter = this.getRowFilter(this.rowFilter);
+        }
     }
 
     ngOnChanges(changes: SimpleChanges) {
