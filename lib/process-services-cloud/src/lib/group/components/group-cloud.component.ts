@@ -44,11 +44,9 @@ export class GroupCloudComponent implements OnInit {
     static MODE_SINGLE = 'single';
     static MODE_MULTIPLE = 'multiple';
 
-    @ViewChild('groupInput') groupInput: ElementRef<HTMLInputElement>;
-
     /** Name of the application. If specified this shows the users who have access to the app. */
     @Input()
-    applicationName: string;
+    appName: string;
 
     /** User selection mode (single/multiple). */
     @Input()
@@ -58,6 +56,10 @@ export class GroupCloudComponent implements OnInit {
     @Input()
     preSelectGroups: GroupModel[] = [];
 
+    /** Role names of the groups to be listed. */
+    @Input()
+    roles: string[];
+
     /** Emitted when a group is selected. */
     @Output()
     selectGroup: EventEmitter<GroupModel> = new EventEmitter<GroupModel>();
@@ -65,6 +67,9 @@ export class GroupCloudComponent implements OnInit {
     /** Emitted when a group is removed. */
     @Output()
     removeGroup: EventEmitter<GroupModel> = new EventEmitter<GroupModel>();
+
+    @ViewChild('groupInput')
+    private groupInput: ElementRef<HTMLInputElement>;
 
     private selectedGroups: GroupModel[] = [];
 
@@ -97,14 +102,14 @@ export class GroupCloudComponent implements OnInit {
         this.loadPreSelectGroups();
         this.initSearch();
 
-        if (this.applicationName) {
+        if (this.appName) {
             this.disableSearch();
             this.loadClientId();
         }
     }
 
     private async loadClientId() {
-        this.clientId = await this.groupService.getClientIdByApplicationName(this.applicationName).toPromise();
+        this.clientId = await this.groupService.getClientIdByApplicationName(this.appName).toPromise();
         if (this.clientId) {
             this.enableSearch();
         }
@@ -112,6 +117,16 @@ export class GroupCloudComponent implements OnInit {
 
     initSearch() {
         this.searchGroupsControl.valueChanges.pipe(
+            filter((value) => {
+                return typeof value === 'string';
+            }),
+            tap((value) => {
+                if (value) {
+                    this.setError();
+                } else {
+                    this.clearError();
+                }
+             }),
             debounceTime(500),
             distinctUntilChanged(),
             tap(() => {
@@ -125,8 +140,12 @@ export class GroupCloudComponent implements OnInit {
                 return !this.isGroupAlreadySelected(group);
             }),
             mergeMap((group: any) => {
-                if (this.clientId) {
-                    return this.checkGroupHasClientRoleMapping(group);
+                if (this.appName) {
+                    return this.checkGroupHasAccess(group.id).pipe(
+                        mergeMap((hasRole) => {
+                            return hasRole ? of(group) : of();
+                        })
+                    );
                 } else {
                     return of(group);
                 }
@@ -150,17 +169,12 @@ export class GroupCloudComponent implements OnInit {
         );
     }
 
-    checkGroupHasClientRoleMapping(group: GroupModel): Observable<GroupModel> {
-        return this.groupService.checkGroupHasClientRoleMapping(group.id, this.clientId).pipe(
-            mergeMap((hasRole: boolean) => {
-                if (hasRole) {
-                    return of(group);
-                } else {
-                    this.setError();
-                    return of();
-                }
-            })
-        );
+    checkGroupHasAccess(groupId: string): Observable<boolean> {
+        if (this.hasRoles()) {
+            return this.groupService.checkGroupHasAnyClientAppRole(groupId, this.clientId, this.roles);
+        } else {
+            return this.groupService.checkGroupHasClientApp(groupId, this.clientId);
+        }
     }
 
     isGroupAlreadySelected(group: GroupModel): boolean {
@@ -250,6 +264,10 @@ export class GroupCloudComponent implements OnInit {
         } else {
             this.setError();
         }
+    }
+
+    private hasRoles(): boolean {
+        return this.roles && this.roles.length > 0;
     }
 
     private disableSearch() {

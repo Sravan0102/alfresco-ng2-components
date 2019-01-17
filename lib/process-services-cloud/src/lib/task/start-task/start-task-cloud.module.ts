@@ -25,6 +25,7 @@ import { StartTaskCloudComponent } from './components/start-task-cloud.component
 import { StartTaskCloudService } from './services/start-task-cloud.service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { PeopleCloudComponent } from './components/people-cloud/people-cloud.component';
+import { GroupCloudModule } from '../../group/public-api';
 
 @NgModule({
     imports: [
@@ -41,7 +42,8 @@ import { PeopleCloudComponent } from './components/people-cloud/people-cloud.com
         MaterialModule,
         FormsModule,
         ReactiveFormsModule,
-        FormModule
+        FormModule,
+        GroupCloudModule
     ],
     declarations: [StartTaskCloudComponent, PeopleCloudComponent],
     providers: [

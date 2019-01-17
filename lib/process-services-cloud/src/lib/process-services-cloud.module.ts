@@ -26,7 +26,8 @@ import { GroupCloudModule } from './group/group-cloud.module';
     imports: [
         AppListCloudModule,
         ProcessCloudModule,
-        TaskCloudModule
+        TaskCloudModule,
+        GroupCloudModule
     ],
     providers: [
         {
