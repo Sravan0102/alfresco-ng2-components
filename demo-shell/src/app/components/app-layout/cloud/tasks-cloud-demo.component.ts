@@ -17,7 +17,7 @@
 
 import { Component, ViewChild, OnInit } from '@angular/core';
 import { TaskListCloudComponent, TaskListCloudSortingModel, TaskFilterCloudModel } from '@alfresco/adf-process-services-cloud';
-import { UserPreferencesService } from '@alfresco/adf-core';
+import { UserPreferencesService, AppConfigService } from '@alfresco/adf-core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CloudLayoutService } from './services/cloud-layout.service';
 @Component({
@@ -25,6 +25,8 @@ import { CloudLayoutService } from './services/cloud-layout.service';
     styleUrls: ['tasks-cloud-demo.component.scss']
 })
 export class TasksCloudDemoComponent implements OnInit {
+
+    static TASK_FILTER_PROPERTY_KEYS = 'adf-edit-task-filter.properties';
 
     @ViewChild('taskCloud')
     taskCloud: TaskListCloudComponent;
@@ -37,6 +39,7 @@ export class TasksCloudDemoComponent implements OnInit {
 
     sortArray: TaskListCloudSortingModel[];
     editedFilter: TaskFilterCloudModel;
+    taskFilterProperties: any[];
 
     filterId;
 
@@ -44,7 +47,13 @@ export class TasksCloudDemoComponent implements OnInit {
         private cloudLayoutService: CloudLayoutService,
         private route: ActivatedRoute,
         private router: Router,
-        private userPreference: UserPreferencesService) {
+        private userPreference: UserPreferencesService,
+        private appConfig: AppConfigService) {
+
+        const properties = this.appConfig.get<Array<any>>(TasksCloudDemoComponent.TASK_FILTER_PROPERTY_KEYS);
+        if (properties) {
+            this.taskFilterProperties = properties;
+        }
     }
 
     ngOnInit() {
