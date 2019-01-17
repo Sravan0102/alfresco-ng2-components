@@ -250,14 +250,14 @@ describe('Metadata component', () => {
     });
 
     it('[C261157] Should be possible use the metadata component When the node is a Folder', () => {
-        contentListPage.metadataContent(folderName);
+        contentServicesPage.metadataContent(folderName);
 
         expect(metadataViewPage.getPropertyText('name')).toEqual(folderName);
         expect(metadataViewPage.getPropertyText('createdByUser.displayName')).toEqual(acsUser.firstName + ' ' + acsUser.lastName);
     });
 
     it('[C261158] Should be possible edit the metadata When the node is a Folder', () => {
-        contentListPage.metadataContent(folderName);
+        contentServicesPage.metadataContent(folderName);
 
         metadataViewPage.editIconClick();
 

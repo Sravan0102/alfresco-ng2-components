@@ -45,6 +45,44 @@ export class DataTablePage {
         this.list = this.rootElement.all(by.css(`div[class*=adf-datatable-body] div[class*=adf-datatable-row]`));
     }
 
+    clickRowToSelectWithRoot(rowName) {
+        let row = this.getRowByRowNameWithRoot(rowName);
+        browser.actions().keyDown(protractor.Key.COMMAND).click(row).perform();
+        this.checkRowIsSelectedWithRoot(rowName);
+        return this;
+    }
+
+    checkRowIsSelectedWithRoot(content) {
+        let isRowSelected = this.getRowsNameWithRoot(content).element(by.xpath(`ancestor::div[contains(@class, 'is-selected')]`));
+        Util.waitUntilElementIsVisible(isRowSelected);
+    }
+
+    getRowsNameWithRoot(content) {
+        let row = this.list.all(by.css(`adf-datatable span[title='${content}']`)).first();
+        Util.waitUntilElementIsVisible(row);
+        return row;
+    }
+
+    getRowByRowNameWithRoot(content) {
+        let rowByRowName = by.xpath(`ancestor::div[contains(@class, 'adf-datatable-row')]`);
+        Util.waitUntilElementIsVisible(this.getRowsNameWithRoot(content).element(rowByRowName));
+        return this.getRowsNameWithRoot(content).element(rowByRowName);
+    }
+
+    getColumnValueForRow(file, columnName) {
+        let row = this.getRowByRowName(file);
+        Util.waitUntilElementIsVisible(row);
+        let rowColumn = row.element(by.css(`div[title="${columnName}"] span`));
+        Util.waitUntilElementIsVisible(rowColumn);
+        return rowColumn.getText();
+    }
+
+    async getStyleValueForRowText(rowName, styleName) {
+        let row = element(by.css(`div.adf-data-table-cell[filename="${rowName}"] span.adf-datatable-cell-value[title="${rowName}"]`));
+        Util.waitUntilElementIsVisible(row);
+        return row.getCssValue(styleName);
+    }
+
     /**
      * Check the list is sorted.
      *
@@ -54,9 +92,10 @@ export class DataTablePage {
      */
     checkListIsSorted(sortOrder, locator) {
         let deferred = protractor.promise.defer();
-        Util.waitUntilElementIsVisible(element.all(locator).first());
+        let column = element.all(by.css(`div[class*="adf-data-table-cell"][title="${locator}"] span`));
+        Util.waitUntilElementIsVisible(column.first());
         let initialList = [];
-        element.all(locator).each(function (currentElement) {
+        column.each(function (currentElement) {
             currentElement.getText().then(function (text) {
                 initialList.push(text);
             });
@@ -79,17 +118,18 @@ export class DataTablePage {
 
     clickRowToSelect(rowName) {
         let row = this.getRowByRowName(rowName);
+        Util.waitUntilElementIsClickable(row);
         browser.actions().keyDown(protractor.Key.COMMAND).click(row).perform();
         this.checkRowIsSelected(rowName);
         return this;
     }
 
     getColumnLocator(column) {
-        return by.css(`div[id*='document-list-container'] div[class*='adf-datatable-row'] div[title='${column}'] adf-datatable-cell span`);
+        return by.css(`div[class*='adf-datatable-row'] div[title='${column}'] span`);
     }
 
     getTooltip(nodeName) {
-        return this.getRowByRowName(nodeName).element(by.css(`#document-list-container span[title="${nodeName}"]`)).getAttribute('title');
+        return this.getRowByRowName(nodeName).element(by.css(`span[title="${nodeName}"]`)).getAttribute('title');
     }
 
     getFileHyperlink(filename) {
@@ -97,11 +137,11 @@ export class DataTablePage {
     }
 
     getAllDisplayedRows() {
-        return element.all(this.rows).count();
+        return this.rootElement.all(this.rows).count();
     }
 
     getAllRowsNameColumn() {
-        return this.getAllRowsColumnValues('Name');
+        return this.getAllRowsColumnValues('Display name');
     }
 
     async getAllRowsColumnValues(column) {
@@ -248,7 +288,8 @@ export class DataTablePage {
         return firstNode.getText();
     }
 
-    sortByColumn(sortOrder, locator) {
+    sortByColumn(sortOrder, column) {
+        let locator = by.css(`div[data-automation-id="auto_id_${column}"]`);
         Util.waitUntilElementIsVisible(element(locator));
         return element(locator).getAttribute('class').then(function (result) {
             if (sortOrder === true) {
@@ -271,14 +312,14 @@ export class DataTablePage {
     }
 
     checkContentIsDisplayed(content) {
-        let row = by.css(`div[filename*="${content}"]`);
+        let row = by.css(`span[title*="${content}"]`);
         Util.waitUntilElementIsVisible(element.all(row).first());
         return this;
     }
 
     checkContentIsNotDisplayed(content) {
-        let row = by.cssContainingText(`[data-automation-id*="${content}"]`, content);
-        Util.waitUntilElementIsNotOnPage(element.all(row).first());
+        let row = by.css(`span[title*="${content}"]`);
+        Util.waitUntilElementIsNotVisible(element.all(row).first());
         return this;
     }
 

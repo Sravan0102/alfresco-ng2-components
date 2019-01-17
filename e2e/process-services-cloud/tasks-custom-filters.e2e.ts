@@ -127,7 +127,7 @@ describe('Task filters cloud', () => {
                 .setSortFilterDropDown('NAME').setOrderFilterDropDown('ASC');
             tasksCloudDemoPage.taskListCloudComponent().getDataTable().checkSpinnerIsDisplayed();
             tasksCloudDemoPage.taskListCloudComponent().getDataTable().checkSpinnerIsNotDisplayed();
-            tasksCloudDemoPage.taskListCloudComponent().getDataTable().getAllRowsNameColumn().then( (list) => {
+            tasksCloudDemoPage.taskListCloudComponent().getAllRowsNameColumn().then( (list) => {
 
                 let initialList = list.slice(0);
                 list.sort();
@@ -137,7 +137,7 @@ describe('Task filters cloud', () => {
             tasksCloudDemoPage.editTaskFilterCloudComponent().setOrderFilterDropDown('DESC');
             tasksCloudDemoPage.taskListCloudComponent().getDataTable().checkSpinnerIsDisplayed();
             tasksCloudDemoPage.taskListCloudComponent().getDataTable().checkSpinnerIsNotDisplayed();
-            tasksCloudDemoPage.taskListCloudComponent().getDataTable().getAllRowsNameColumn().then( (list) => {
+            tasksCloudDemoPage.taskListCloudComponent().getAllRowsNameColumn().then( (list) => {
                 let initialList = list.slice(0);
                 list.sort();
                 list.reverse();
