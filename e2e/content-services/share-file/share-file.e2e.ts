@@ -69,8 +69,11 @@ describe('Share file', () => {
 
         loginPage.loginToContentServicesUsingUserModel(acsUser);
 
-        contentServicesPage.navigateToDocumentList();
+        done();
+    });
 
+    beforeEach((done) => {
+        contentServicesPage.navigateToDocumentList();
         done();
     });
 
